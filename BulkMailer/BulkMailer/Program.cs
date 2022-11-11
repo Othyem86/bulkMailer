@@ -1,3 +1,7 @@
+using BulkMailer.Data;
+using BulkMailer.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +10,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Services
+builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Configuration["SQLDbConnection"]));
+builder.Services.AddScoped<IEmailRecipientsService, EmailRecipientService>();
+builder.Services.AddScoped<IEmailAddressValidator, EmailAddressValidator>();
+
 
 var app = builder.Build();
 
@@ -16,10 +26,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler("/error");
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
+//app.UseAuthorization();
 app.MapControllers();
-
 app.Run();
