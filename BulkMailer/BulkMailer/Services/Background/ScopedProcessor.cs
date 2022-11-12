@@ -4,6 +4,8 @@ public abstract class ScopedProcessor : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
+    public int Delay = 5000;
+
     protected ScopedProcessor(IServiceScopeFactory serviceScopeFactory) : base()
     {
         _serviceScopeFactory = serviceScopeFactory;
@@ -23,7 +25,8 @@ public abstract class ScopedProcessor : BackgroundService
         {
             await Process();
 
-            await Task.Delay(5000, stoppingToken); //5 seconds delay
+            // TODO: get task delay value from some outside settings
+            await Task.Delay(Delay, stoppingToken); 
         }
         while (!stoppingToken.IsCancellationRequested);
     }

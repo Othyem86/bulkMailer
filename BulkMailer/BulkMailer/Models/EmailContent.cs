@@ -2,9 +2,9 @@
 
 public class EmailContent
 {
-    string? Sender { get; set; }
+    public string? From { get; set; }
 
-    string? Title { get; set; }
+    public string? Subject { get; set; }
 
-    string? Body { get; set; }
+    public string? PlainTextContent { get; set; }
 }

@@ -1,4 +1,5 @@
 using BulkMailer.Data;
+using BulkMailer.Services.Background;
 using BulkMailer.Services.Emails;
 using BulkMailer.Services.Validation;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +15,13 @@ builder.Services.AddSwaggerGen();
 
 // Services
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Configuration["SQLDbConnection"]));
-//builder.Services.AddHostedService<EmailDispatcherService>();
+builder.Services.AddHostedService<EmailScheduledDispatchService>();
 
 builder.Services.AddScoped<IEmailRecipientsService, EmailRecipientService>();
 builder.Services.AddScoped<IEmailAddressValidator, EmailAddressValidator>();
 
+builder.Services.AddTransient<IEmailDispatcher, SendGridDispatcher>();
+builder.Services.AddTransient<IEmailContentProvider, MockEmailContentProvider>();
 
 var app = builder.Build();
 
