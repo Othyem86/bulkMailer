@@ -1,4 +1,4 @@
-﻿namespace BulkMailer.Services.Hosted;
+﻿namespace BulkMailer.Services.Emails;
 
 public interface IEmailDispatcher
 {

@@ -1,5 +1,4 @@
 using BulkMailer.Data;
-using BulkMailer.Services;
 using BulkMailer.Services.Emails;
 using BulkMailer.Services.Validation;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +14,8 @@ builder.Services.AddSwaggerGen();
 
 // Services
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Configuration["SQLDbConnection"]));
+//builder.Services.AddHostedService<EmailDispatcherService>();
+
 builder.Services.AddScoped<IEmailRecipientsService, EmailRecipientService>();
 builder.Services.AddScoped<IEmailAddressValidator, EmailAddressValidator>();
 
@@ -29,7 +30,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseExceptionHandler("/error");
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 //app.UseAuthorization();
 app.MapControllers();
 app.Run();

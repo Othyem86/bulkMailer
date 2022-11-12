@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BulkMailer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221111194349_initialmigration")]
+    [Migration("20221112092027_initialmigration")]
     partial class initialmigration
     {
         /// <inheritdoc />
@@ -36,7 +36,7 @@ namespace BulkMailer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("ReceivedEmail")
+                    b.Property<bool>("IsPending")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");

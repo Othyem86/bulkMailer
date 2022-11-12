@@ -1,7 +1,6 @@
 ﻿using BulkMailer.Contracts;
 using BulkMailer.Models;
 using BulkMailer.Services.Emails;
-using BulkMailer.Services.Hosted;
 using BulkMailer.Services.Validation;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
@@ -19,8 +18,7 @@ public class EmailRecipientsController : ControllerBase
 
     public EmailRecipientsController(
         IEmailRecipientsService recipientsService,
-        IEmailAddressValidator eMailValidator,
-        IEmailDispatcher emailDispatcher)
+        IEmailAddressValidator eMailValidator)
     {
         _eMailRecipientsService = recipientsService;
         _eMailValidator = eMailValidator;
@@ -54,10 +52,13 @@ public class EmailRecipientsController : ControllerBase
 
             await _eMailRecipientsService.CreateRecipientAsync(recipient);
 
-            validAddresses.Add(new EmailRecipientResponse(address, false));
+            validAddresses.Add(new EmailRecipientResponse(
+                recipient.Email, 
+                recipient.IsPending));
         }
         // TODO: what's the proper response etiquette in a scenario with no get entpoint?
         // return Ok(validAddresses);
+
         return CreatedAtAction(
             nameof(GetAllEmailRecipients), 
             validAddresses);

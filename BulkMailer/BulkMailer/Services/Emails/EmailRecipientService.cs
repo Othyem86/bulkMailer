@@ -40,7 +40,7 @@ namespace BulkMailer.Services.Emails
         public async Task<IEnumerable<EmailRecipient>> GetAllPendingRecipientsAsync()
         {
             var recipients = await _appDbContext.Recipients
-                .Where(r => r.IsPending == false)
+                .Where(r => r.IsPending == true)
                 .ToListAsync();
 
             return recipients;

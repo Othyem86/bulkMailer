@@ -33,7 +33,7 @@ namespace BulkMailer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("ReceivedEmail")
+                    b.Property<bool>("IsPending")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
