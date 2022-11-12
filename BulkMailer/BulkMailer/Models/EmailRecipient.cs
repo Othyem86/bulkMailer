@@ -8,9 +8,12 @@ namespace BulkMailer.Models
         public int Id { get; set; }
 
         [Required]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
+        /// <summary>
+        /// True, if the recipient has not yet received an email.
+        /// </summary>
         [Required]
-        public bool ReceivedEmail { get; set; }
+        public bool IsPending { get; set; }
     }
 }

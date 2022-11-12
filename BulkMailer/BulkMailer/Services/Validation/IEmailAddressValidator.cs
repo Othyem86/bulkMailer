@@ -1,4 +1,4 @@
-﻿namespace BulkMailer.Services
+﻿namespace BulkMailer.Services.Validation
 {
     public interface IEmailAddressValidator
     {

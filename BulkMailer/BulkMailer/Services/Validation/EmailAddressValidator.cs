@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
 
-namespace BulkMailer.Services
+namespace BulkMailer.Services.Validation
 {
     public class EmailAddressValidator : IEmailAddressValidator
     {
@@ -9,7 +9,7 @@ namespace BulkMailer.Services
 
         public bool IsValidEmailAdress(string email)
         {
-            return !string.IsNullOrWhiteSpace(email) && 
+            return !string.IsNullOrWhiteSpace(email) &&
                    _emailAddressAttribute.IsValid(email);
         }
     }

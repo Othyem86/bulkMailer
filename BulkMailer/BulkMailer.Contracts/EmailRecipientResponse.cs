@@ -1,3 +1,3 @@
 ﻿namespace BulkMailer.Contracts;
 
-public record EmailRecipientResponse(string email, bool receivedMail);
+public record EmailRecipientResponse(string? Email, bool IsPending);

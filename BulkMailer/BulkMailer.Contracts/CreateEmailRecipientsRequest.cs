@@ -6,4 +6,4 @@
 /// <param name="emails">
 /// String representing enumerated email adresses. Comma and/or semicolon separated.
 /// </param>
-public record CreateEmailRecipientsRequest(string emails);
+public record CreateEmailRecipientsRequest(string? Emails);

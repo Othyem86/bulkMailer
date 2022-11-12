@@ -1,5 +1,7 @@
 using BulkMailer.Data;
 using BulkMailer.Services;
+using BulkMailer.Services.Emails;
+using BulkMailer.Services.Validation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,70 +1,79 @@
 ﻿using BulkMailer.Contracts;
 using BulkMailer.Models;
-using BulkMailer.Services;
+using BulkMailer.Services.Emails;
+using BulkMailer.Services.Hosted;
+using BulkMailer.Services.Validation;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
-namespace BulkMailer.Controllers
+namespace BulkMailer.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class EmailRecipientsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class EmailRecipientsController : ControllerBase
+    private readonly IEmailRecipientsService _eMailRecipientsService;
+
+    private readonly IEmailAddressValidator _eMailValidator;
+
+
+    public EmailRecipientsController(
+        IEmailRecipientsService recipientsService,
+        IEmailAddressValidator eMailValidator,
+        IEmailDispatcher emailDispatcher)
     {
-        private readonly IEmailRecipientsService _eMailRecipientsService;
+        _eMailRecipientsService = recipientsService;
+        _eMailValidator = eMailValidator;
+    }
 
-        private readonly IEmailAddressValidator _eMailValidator;
 
+    [HttpPost]
+    public async Task<IActionResult> CreateEmailRecipients(CreateEmailRecipientsRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Emails))
+            return BadRequest("You entered a wrong formatted email. Please try again.");
 
-        public EmailRecipientsController(
-            IEmailRecipientsService recipientsService,
-            IEmailAddressValidator eMailValidator)
+        var separators = new [] { ' ', ',', ';' };
+        var addresses = request.Emails.Split(
+            separators,
+            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+        var validAddresses = new List<EmailRecipientResponse>();
+
+        foreach (var address in addresses)
         {
-            _eMailRecipientsService = recipientsService;
-            _eMailValidator = eMailValidator;
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> CreateEmailRecipients(CreateEmailRecipientsRequest request)
-        {
-            var separators = new [] { ' ', ',', ';' };
-
-            var addresses = request.emails.Split(
-                separators,
-                StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-
-            var validAddresses = new List<EmailRecipientResponse>();
-
-            foreach (var address in addresses)
-            {
-                if (!_eMailValidator.IsValidEmailAdress(address))
-                    return BadRequest("You entered a wrong formatted email. Please try again.");
+            if (!_eMailValidator.IsValidEmailAdress(address))
+                return BadRequest("You entered a wrong formatted email. Please try again.");
                 
-                var recipient = new EmailRecipient
-                {
-                    Email = address,
-                    ReceivedEmail = false
-                };
+            // Map requests to recipients
+            var recipient = new EmailRecipient
+            {
+                Email = address,
+                IsPending = true
+            };
 
-                await _eMailRecipientsService.CreateRecipientAsync(recipient);
+            await _eMailRecipientsService.CreateRecipientAsync(recipient);
 
-                validAddresses.Add(new EmailRecipientResponse(address, false));
-            }
-
-            // TODO: what's the proper response etiquette in this scenario?
-            // return Ok(validAddresses);
-
-            return CreatedAtAction(
-                nameof(GetAllEmailRecipients), 
-                validAddresses);
+            validAddresses.Add(new EmailRecipientResponse(address, false));
         }
+        // TODO: what's the proper response etiquette in a scenario with no get entpoint?
+        // return Ok(validAddresses);
+        return CreatedAtAction(
+            nameof(GetAllEmailRecipients), 
+            validAddresses);
+    }
 
-        // TODO: for test purposes only
-        [HttpGet]
-        public async Task<IActionResult> GetAllEmailRecipients()
-        {
-            var emailRecipients = await _eMailRecipientsService.GetAllRecipientsAsync();
+    // TODO: This endpoint is for test purposes only
+    [HttpGet]
+    public async Task<IActionResult> GetAllEmailRecipients()
+    {
+        var emailRecipients = await _eMailRecipientsService.GetAllRecipientsAsync();
 
-            return Ok(emailRecipients);
-        }
+        // Map recipients to responses
+        var emailRecipientResponses = emailRecipients
+            .Select(r => new EmailRecipientResponse(r.Email, r.IsPending))
+            .ToList();
+
+        return Ok(emailRecipientResponses);
     }
 }
